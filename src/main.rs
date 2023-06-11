@@ -55,7 +55,7 @@ pub async fn verify_helm_source(
         }
     }
 
-    return Ok(());
+    Ok(())
 }
 
 async fn ask_for_update(
@@ -64,31 +64,28 @@ async fn ask_for_update(
     helm: &HelmChart,
     newest_version: &str,
 ) -> anyhow::Result<()> {
-    let ans = Confirm::new(
-        &format!(
-            "Do you want to update {} from {} to {}?",
-            argo_application.name_any(),
-            helm.revision,
-            newest_version,
-        )
-        .to_string(),
-    )
+    let ans = Confirm::new(&format!(
+        "Do you want to update {} from {} to {}?",
+        argo_application.name_any(),
+        helm.revision,
+        newest_version,
+    ))
     .with_default(false)
     .with_help_message("Don't forget to also update the argo files in your git repo!")
     .prompt();
 
     match ans {
         Ok(true) => {
-            patch_application(client, argo_application, &helm, newest_version).await?;
+            patch_application(client, argo_application, helm, newest_version).await?;
 
             info!("successfully update the application spec");
 
-            return Ok(());
+            Ok(())
         }
         Ok(false) => {
             info!("not updating the chart");
 
-            return Ok(());
+            Ok(())
         }
         Err(_) => bail!("cannot get user confirmation to update"),
     }
@@ -120,5 +117,5 @@ async fn main() -> anyhow::Result<()> {
         }
     }
 
-    return Ok(());
+    Ok(())
 }

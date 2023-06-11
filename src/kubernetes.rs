@@ -25,7 +25,7 @@ pub async fn init_client(
     .await?;
 
     if let Some(namespace) = namespace {
-        config.default_namespace = String::from(namespace);
+        config.default_namespace = namespace;
     }
 
     let https = config.openssl_https_connector()?;
@@ -34,7 +34,7 @@ pub async fn init_client(
         .option_layer(config.auth_layer()?)
         .service(hyper::Client::builder().build(https));
 
-    return Ok(Client::new(service, config.default_namespace));
+    Ok(Client::new(service, config.default_namespace))
 }
 
 #[derive(CustomResource, Deserialize, Serialize, Clone, Debug, JsonSchema)]
@@ -56,7 +56,7 @@ impl Application {
             return source.is_helm();
         }
 
-        return false;
+        false
     }
 
     pub fn helm_in_sources(&self) -> bool {
@@ -70,7 +70,7 @@ impl Application {
             }
         }
 
-        return false;
+        false
     }
 
     pub fn contains_helm(&self) -> bool {
@@ -82,7 +82,7 @@ impl Application {
             return true;
         }
 
-        return false;
+        false
     }
 }
 
@@ -104,7 +104,7 @@ pub struct SourceSpec {
 
 impl SourceSpec {
     pub fn is_helm(&self) -> bool {
-        return self.chart.is_some();
+        self.chart.is_some()
     }
 }
 
@@ -118,7 +118,7 @@ pub async fn list_applications(client: &Client) -> anyhow::Result<Vec<Applicatio
         output.push(a);
     }
 
-    return Ok(output);
+    Ok(output)
 }
 
 pub async fn patch_application(
@@ -133,13 +133,13 @@ pub async fn patch_application(
 
     debug!("{}", patch);
 
-    return apps_api
+    apps_api
         .patch(
             &argo_application.name_any(),
             &PatchParams::apply("argo-helm-updater"),
             &Patch::Merge(patch),
         )
-        .await;
+        .await
 }
 
 fn get_application_patch(
@@ -155,7 +155,7 @@ fn get_application_patch(
             let mut patched_source = source.clone();
 
             if source.chart.is_some() && helm.chart.cmp(&(source.clone()).chart.unwrap()).is_eq() {
-                patched_source.target_revision = Some(new_revision.clone().to_string());
+                patched_source.target_revision = Some((*new_revision).to_string());
             }
 
             patched_sources.push(patched_source);
@@ -174,5 +174,5 @@ fn get_application_patch(
         patched_source.target_revision = Some(new_revision.to_string());
     }
 
-    return json!({ "spec": { "source": patched_source } });
+    json!({ "spec": { "source": patched_source } })
 }

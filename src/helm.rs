@@ -29,11 +29,11 @@ impl TryFrom<SourceSpec> for HelmChart {
             bail!("missing target_revision url");
         }
 
-        return Ok(Self {
+        Ok(Self {
             chart: value.chart.unwrap(),
             repo: value.repo_url.unwrap(),
             revision: value.target_revision.unwrap(),
-        });
+        })
     }
 }
 
@@ -43,11 +43,11 @@ impl HelmChart {
             .await?
             .get_newest_chart_version(&self.chart)?;
 
-        return match self.revision.cmp(&newest_version) {
+        match self.revision.cmp(&newest_version) {
             Ordering::Greater => Ok(Some(newest_version)),
             Ordering::Equal => Ok(None),
             Ordering::Less => Ok(Some(newest_version)),
-        };
+        }
     }
 }
 
@@ -88,5 +88,5 @@ pub async fn get_helm_repo_index(repo_url: &str) -> anyhow::Result<HelmRepoIndex
 
     let values: HelmRepoIndex = serde_yaml::from_str(&res).unwrap();
 
-    return Ok(values);
+    Ok(values)
 }
