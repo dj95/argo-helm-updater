@@ -13,13 +13,17 @@ mod kubernetes;
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
-    #[arg(short, long)]
+    #[arg(short, long, help = "Namespace that holds all applications to check")]
     namespace: Option<String>,
 
-    #[arg(short, long)]
+    #[arg(short, long, help = "Context of the cluster to connect to")]
     context: Option<String>,
 
-    #[arg(long, default_value_t = false)]
+    #[arg(
+        long,
+        default_value_t = false,
+        help = "Prompt to update the application directly in the cluster"
+    )]
     update: bool,
 }
 
