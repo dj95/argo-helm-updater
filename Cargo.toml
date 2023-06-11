@@ -1,5 +1,5 @@
 [package]
-name = "argo-helm-update"
+name = "argo-helm-updater"
 version = "0.1.0"
 edition = "2021"
 
