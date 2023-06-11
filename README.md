@@ -1,14 +1,14 @@
-<h1 align="center">argo-helm-updater 📦⬆️</h1>
+<h1 align="center">argo-helm-updater 📦 ⬆️</h1>
 
 <p align="center">
-  Helps you to identify outdated helm charts in you argocd instance.
+  Helps you to identify outdated helm charts in your argocd instance.
   <br><br>
   <a href="https://github.com/dj95/argo-helm-updater/releases">
     <img alt="latest version" src="https://img.shields.io/github/v/tag/dj95/argo-helm-updater.svg?sort=semver" />
   </a>
   <br><br>
   This tool helps you to identify and update your helm charts, that are deployed with argocd.
-  It retrieves all `Application` CRDs from the given context and namespace. Since these
+  It retrieves all 'Application' CRDs from the given context and namespace. Since these
   applications contain all information about the helm deployment, if one is used, this tool
   queries the given repository for the latest chart version and displays a difference, if
   a newer version is deployed.
@@ -23,6 +23,20 @@
 
 - nix
 - direnv
+
+
+### 🚀 Getting started
+
+Clone the repository and make sure the dependencies are installed. You either need rust or nix installed.
+With nix use either `nix-shell` or `direnv allow` up to your preferences.
+After dependencies are available run `cargo install --path .` to build and install the tool.
+
+Then you should be able to call the tool with `argo-helm-updater`. It will search for the `Application` CRD of argo
+in the current configured context and namespace. Use the `--context` and `--namespace` flags to search in other
+clusters and namespaces.
+
+If you'd like to update the helm version in the cluster, run `argo-helm-updater` with the  `--update` flage.
+It will prompt on each new version with a confirmation whether you'd like to update the `Application` or not.
 
 
 ## 🤝 Contributing
