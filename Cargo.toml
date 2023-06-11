@@ -10,7 +10,11 @@ anyhow = "1.0.71"
 clap = { version = "4.3.3", features = ["derive"] }
 hyper = "0.14.26"
 k8s-openapi = { version = "0.18.0", features = ["v1_26"] }
-kube = "0.83.0"
+kube = { version = "0.83.0", features = ["derive"] }
+kube-derive = "0.83.0"
+schemars = { version = "0.8.12", features = ["derive_json_schema"] }
+serde = { version = "1.0.164", features = ["derive"] }
+serde_json = "1.0.96"
 tokio = { version = "1.28.2", features = ["full"] }
 tower = "0.4.13"
 tower-http = "0.4.0"
