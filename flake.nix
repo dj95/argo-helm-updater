@@ -15,11 +15,7 @@
       in rec {
         packages = {
           argo-helm-updater = code.argo-helm-updater;
-          all = pkgs.symlinkJoin {
-            name = "all";
-            paths = with code; [ argo-helm-updater ];
-          };
-        default = packages.all;
+          default = packages.argo-helm-updater;
         };
       }
     );
