@@ -3,6 +3,9 @@
 <p align="center">
   Helps you to identify outdated helm charts in your argocd instance.
   <br><br>
+  <a href="https://github.com/dj95/argo-helm-updater/actions/workflows/rust.yml">
+    <img alt="latest version" src="https://github.com/dj95/argo-helm-updater/actions/workflows/rust.yml/badge.svg" />
+  </a>
   <a href="https://github.com/dj95/argo-helm-updater/releases">
     <img alt="latest version" src="https://img.shields.io/github/v/tag/dj95/argo-helm-updater.svg?sort=semver" />
   </a>
