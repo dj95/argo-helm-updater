@@ -42,11 +42,15 @@ pub struct ApplicationSpec {
 }
 
 impl Application {
-    pub fn contains_helm(&self) -> bool {
+    pub fn helm_in_source(&self) -> bool {
         if let Some(source) = &self.spec.source {
             return source.is_helm();
         }
 
+        return false;
+    }
+
+    pub fn helm_in_sources(&self) -> bool {
         if let Some(sources) = &self.spec.sources {
             for source in sources {
                 if !source.is_helm() {
@@ -59,15 +63,27 @@ impl Application {
 
         return false;
     }
+
+    pub fn contains_helm(&self) -> bool {
+        if self.helm_in_source() {
+            return true;
+        }
+
+        if self.helm_in_sources() {
+            return true;
+        }
+
+        return false;
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, JsonSchema)]
 pub struct SourceSpec {
-    chart: Option<String>,
+    pub chart: Option<String>,
     #[serde(alias = "repoURL")]
-    repo_url: Option<String>,
+    pub repo_url: Option<String>,
     #[serde(alias = "targetRevision")]
-    target_revision: Option<String>,
+    pub target_revision: Option<String>,
 }
 
 impl SourceSpec {
