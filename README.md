@@ -42,6 +42,53 @@ If you'd like to update the helm version in the cluster, run `argo-helm-updater`
 It will prompt on each new version with a confirmation whether you'd like to update the `Application` or not.
 
 
+### ❄️ Installation with nix
+
+Add the following code to your overlays. Then argo-helm-updater can be installed from `pkgs`.
+
+```nix
+final: prev: {
+  argo-helm-updater = prev.pkgs.rustPlatform.buildRustPackage rec {
+    version = "0.1.0";
+    pname = "argo-helm-updater";
+
+    src = prev.fetchFromGitHub {
+      owner = "dj95";
+      repo = pname;
+      rev = "59911696aa710e5bb2c7f77789010d10d9f5fd88";
+      sha256 = "sha256-D1o9gjVoM+qlht2n9pwXCDALR1pzbCwdMP+pL0NFrGs=";
+    };
+
+    cargoSha256 = "sha256-7CYMh1PcqACfpZy4dASV3MYHoxYtTxZcXt/TFaU7aWY=";
+
+    nativeBuildInputs = [
+      prev.pkgs.pkg-config
+      prev.pkgs.libiconv
+      prev.pkgs.openssl
+    ];
+
+    buildInputs = [] ++ prev.pkgs.lib.optionals prev.pkgs.stdenv.isDarwin [
+      prev.pkgs.darwin.apple_sdk.frameworks.Cocoa
+      prev.pkgs.darwin.apple_sdk.frameworks.CoreGraphics
+      prev.pkgs.darwin.apple_sdk.frameworks.Foundation
+      prev.pkgs.darwin.apple_sdk.frameworks.IOKit
+      prev.pkgs.darwin.apple_sdk.frameworks.Kernel
+      prev.pkgs.darwin.apple_sdk.frameworks.OpenGL
+      prev.pkgs.darwin.apple_sdk.frameworks.Security
+    ];
+
+    PKG_CONFIG_PATH = "${prev.pkgs.openssl.dev}/lib/pkgconfig";
+  };
+}
+```
+
+If you just want to try it with nix, run the following command.
+
+```bash
+nix run 'github:dj95/argo-helm-updater'
+```
+
+
 ## 🤝 Contributing
 
 If you are missing features or find some annoying bugs please feel free to submit an issue or a bugfix within a pull request :)
