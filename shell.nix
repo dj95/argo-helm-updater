@@ -16,6 +16,7 @@ in
 pkgs.mkShell {
   buildInputs = with pkgs; [
     cargo
+    clippy
     libiconv
     rustc
     openssl
