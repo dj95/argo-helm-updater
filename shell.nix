@@ -16,6 +16,7 @@ in
 pkgs.mkShell {
   buildInputs = with pkgs; [
     cargo
+    cargo-audit
     clippy
     libiconv
     rustc
