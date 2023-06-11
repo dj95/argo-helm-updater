@@ -15,6 +15,9 @@
 </p>
 
 
+![Demo GIF of argo-helm-updater in action](./example/demo.gif)
+
+
 ### 📦 Requirements
 
 - rust
