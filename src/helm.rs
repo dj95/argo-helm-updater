@@ -3,6 +3,7 @@ use std::{cmp::Ordering, collections::HashMap};
 use anyhow::{bail, Ok};
 use chrono::{DateTime, Utc};
 use serde::Deserialize;
+use serde_yaml::Error;
 
 use crate::kubernetes::SourceSpec;
 
@@ -86,7 +87,10 @@ pub async fn get_helm_repo_index(repo_url: &str) -> anyhow::Result<HelmRepoIndex
         .text()
         .await?;
 
-    let values: HelmRepoIndex = serde_yaml::from_str(&res).unwrap();
+    let values: Result<HelmRepoIndex, Error> = serde_yaml::from_str(&res);
 
-    Ok(values)
+    match values {
+        core::result::Result::Ok(v) => Ok(v),
+        Err(_) => bail!("cannot fetch or deserialize helm repo index"),
+    }
 }

@@ -3,7 +3,7 @@ use clap::Parser;
 use inquire::Confirm;
 use kube::{Client, ResourceExt};
 use kubernetes::{init_client, patch_application, Application, SourceSpec};
-use log::info;
+use log::{error, info};
 
 use crate::{helm::HelmChart, kubernetes::list_applications};
 
@@ -107,12 +107,22 @@ async fn main() -> anyhow::Result<()> {
         }
 
         if a.helm_in_source() {
-            verify_helm_source(&client, &a, &(a.clone()).spec.source.unwrap(), args.update).await?;
+            let result =
+                verify_helm_source(&client, &a, &(a.clone()).spec.source.unwrap(), args.update)
+                    .await;
+
+            if result.is_err() {
+                error!("cannot fetch update: {:?}", result.err().unwrap());
+            }
         }
 
         if a.helm_in_sources() {
             for source in (a.clone()).spec.sources.unwrap() {
-                verify_helm_source(&client, &a, &source, args.update).await?;
+                let result = verify_helm_source(&client, &a, &source, args.update).await;
+
+                if result.is_err() {
+                    error!("cannot fetch update: {:?}", result.err().unwrap());
+                }
             }
         }
     }
