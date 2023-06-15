@@ -112,7 +112,11 @@ async fn main() -> anyhow::Result<()> {
                     .await;
 
             if result.is_err() {
-                error!("cannot fetch update: {:?}", result.err().unwrap());
+                error!(
+                    "cannot fetch update for application '{}': {:?}",
+                    a.name_any(),
+                    result.err().unwrap()
+                );
             }
         }
 
@@ -121,7 +125,11 @@ async fn main() -> anyhow::Result<()> {
                 let result = verify_helm_source(&client, &a, &source, args.update).await;
 
                 if result.is_err() {
-                    error!("cannot fetch update: {:?}", result.err().unwrap());
+                    error!(
+                        "cannot fetch update for application '{}': {:?}",
+                        a.name_any(),
+                        result.err().unwrap()
+                    );
                 }
             }
         }
