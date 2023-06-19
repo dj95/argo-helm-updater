@@ -44,10 +44,11 @@ pub async fn verify_helm_source(
 
     if let Some(newest_version) = newest_version {
         info!(
-            "{} has new version {} instead of {}",
+            "app: {} | chart: {} has new version {} (current: {})",
             argo_application.name_any(),
+            helm.chart,
             newest_version,
-            helm.revision
+            helm.revision,
         );
 
         if should_ask_for_update {
