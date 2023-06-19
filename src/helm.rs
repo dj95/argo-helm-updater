@@ -2,6 +2,7 @@ use std::{cmp::Ordering, collections::HashMap};
 
 use anyhow::{bail, Ok};
 use chrono::{DateTime, Utc};
+use log::debug;
 use serde::Deserialize;
 use serde_yaml::Error;
 
@@ -55,7 +56,7 @@ impl HelmChart {
 #[derive(Deserialize, Debug, Clone)]
 pub struct HelmRepoChartVersion {
     #[serde(alias = "apiVersion")]
-    pub api_version: String,
+    pub api_version: Option<String>,
     pub name: String,
     pub version: String,
     pub created: DateTime<Utc>,
@@ -91,6 +92,10 @@ pub async fn get_helm_repo_index(repo_url: &str) -> anyhow::Result<HelmRepoIndex
 
     match values {
         core::result::Result::Ok(v) => Ok(v),
-        Err(_) => bail!("cannot fetch or deserialize helm repo index"),
+        Err(e) => {
+            debug!("{:?}", e);
+
+            bail!("cannot fetch or deserialize helm repo index")
+        }
     }
 }
