@@ -52,17 +52,17 @@ Add the following code to your overlays. Then argo-helm-updater can be installed
 ```nix
 final: prev: {
   argo-helm-updater = prev.pkgs.rustPlatform.buildRustPackage rec {
-    version = "0.2.0";
+    version = "0.2.1";
     pname = "argo-helm-updater";
 
     src = prev.fetchFromGitHub {
       owner = "dj95";
       repo = pname;
-      rev = "30ffe33a4d4fdbe80c67a791f5bd41c240130022";
-      sha256 = "sha256-YLA9Mmo8rRjG1LYeki5NQOOxaBdw/HAJjJIMvFKBpoY=";
+      rev = "f2d8222d448016086adf2313a7c12eb5975321fd";
+      sha256 = "sha256-DPzmCaw7CGGbVdrbV9JgnU5XSSNj8PW+7Wjx9KSprfI=";
     };
 
-    cargoSha256 = "sha256-IzyAaKqdOEdZ5RN16JURu4haMMFmwB5zkwBN3fEfops=";
+    cargoSha256 = "sha256-Ooi2SpTuUA2TbW9uQCgzflCfiS0WKgkDdBZ2Sg7PvkA=";
 
     nativeBuildInputs = [
       prev.pkgs.pkg-config
