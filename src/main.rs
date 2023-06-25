@@ -1,5 +1,6 @@
 use anyhow::bail;
 use clap::Parser;
+use helm::HelmRepoReqwestClient;
 use inquire::Confirm;
 use kube::{Client, ResourceExt};
 use kubernetes::{init_client, patch_application, Application, SourceSpec};
@@ -40,7 +41,7 @@ pub async fn verify_helm_source(
     }
 
     let helm = helm.unwrap();
-    let newest_version = helm.get_newer_version().await?;
+    let newest_version = helm.get_newer_version(&HelmRepoReqwestClient {}).await?;
 
     if let Some(newest_version) = newest_version {
         info!(

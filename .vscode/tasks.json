@@ -1,0 +1,10 @@
+{
+    "tasks": [
+        {
+            "command": "cargo test",
+            "label": "🧪 Run tests",
+            "problemMatcher": [],
+            "type": "shell"
+        }
+    ]
+}

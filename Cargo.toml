@@ -7,6 +7,7 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.71"
+async-trait = "0.1.68"
 chrono = { version = "0.4.26", default-features = false, features = ["serde"]}
 clap = { version = "4.3.3", features = ["derive"] }
 env_logger = "0.10.0"
@@ -16,6 +17,7 @@ k8s-openapi = { version = "0.18.0", features = ["v1_26"] }
 kube = { version = "0.83.0", features = ["derive"] }
 kube-derive = "0.83.0"
 log = "0.4.19"
+mockall = "0.11.4"
 reqwest = "0.11.18"
 schemars = { version = "0.8.12", features = ["derive_json_schema"] }
 serde = { version = "1.0.164", features = ["derive"] }
