@@ -59,7 +59,7 @@ impl HelmChart {
     }
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, PartialEq)]
 pub struct HelmRepoChartVersion {
     #[serde(alias = "apiVersion")]
     pub api_version: Option<String>,
@@ -68,7 +68,7 @@ pub struct HelmRepoChartVersion {
     pub created: DateTime<Utc>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, PartialEq)]
 pub struct HelmRepoIndex {
     #[serde(alias = "apiVersion")]
     pub api_version: String,
@@ -129,7 +129,10 @@ mod test {
 
     use chrono::DateTime;
 
-    use crate::kubernetes::SourceSpec;
+    use crate::{
+        helm::{HelmRepoClient, HelmRepoReqwestClient},
+        kubernetes::SourceSpec,
+    };
 
     use super::{HelmChart, HelmRepoChartVersion, HelmRepoIndex, MockHelmRepoClient};
 
@@ -161,7 +164,7 @@ mod test {
 
         let result = HelmChart::try_from(source_spec);
 
-        assert_eq!(false, result.is_err());
+        assert!(result.is_ok());
     }
 
     #[test]
@@ -174,7 +177,7 @@ mod test {
 
         let result = HelmChart::try_from(source_spec);
 
-        assert_eq!(true, result.is_err());
+        assert!(result.is_err());
     }
 
     #[test]
@@ -187,7 +190,7 @@ mod test {
 
         let result = HelmChart::try_from(source_spec);
 
-        assert_eq!(true, result.is_err());
+        assert!(result.is_err());
     }
 
     #[test]
@@ -197,28 +200,29 @@ mod test {
 
         let result = HelmChart::try_from(source_spec);
 
-        assert_eq!(true, result.is_err());
+        assert!(result.is_err());
     }
 
     fn create_stub_client() -> MockHelmRepoClient {
         let mut stub_client = MockHelmRepoClient::new();
 
-        let mut version = Vec::new();
-        version.push(HelmRepoChartVersion {
-            api_version: Some("api_version".to_owned()),
-            name: "name".to_owned(),
-            version: "v0.1.0".to_owned(),
-            created: DateTime::from_str("2022-11-10T11:40:08.566983693Z").expect("wrong param"),
-        });
-        version.push(HelmRepoChartVersion {
-            api_version: Some("api_version".to_owned()),
-            name: "name".to_owned(),
-            version: "v0.2.0".to_owned(),
-            created: DateTime::from_str("2022-11-11T11:40:08.566983693Z").expect("wrong param"),
-        });
+        let versions = vec![
+            HelmRepoChartVersion {
+                api_version: Some("api_version".to_owned()),
+                name: "name".to_owned(),
+                version: "v0.1.0".to_owned(),
+                created: DateTime::from_str("2022-11-10T11:40:08.566983693Z").expect("wrong param"),
+            },
+            HelmRepoChartVersion {
+                api_version: Some("api_version".to_owned()),
+                name: "name".to_owned(),
+                version: "v0.2.0".to_owned(),
+                created: DateTime::from_str("2022-11-11T11:40:08.566983693Z").expect("wrong param"),
+            },
+        ];
 
         let mut entries = HashMap::new();
-        entries.insert("chart".to_owned(), version);
+        entries.insert("chart".to_owned(), versions);
 
         stub_client
             .expect_get_helm_repo_index()
@@ -243,10 +247,10 @@ mod test {
         };
 
         let result = helm_chart.get_newer_version(&client).await;
-        assert_eq!(false, result.is_err());
+        assert!(result.is_ok());
 
         let value = result.unwrap();
-        assert_eq!(true, value.is_some());
+        assert!(value.is_some());
         assert_eq!("v0.2.0", value.unwrap());
     }
 
@@ -261,10 +265,10 @@ mod test {
         };
 
         let result = helm_chart.get_newer_version(&client).await;
-        assert_eq!(false, result.is_err());
+        assert!(result.is_ok());
 
         let value = result.unwrap();
-        assert_eq!(true, value.is_none());
+        assert!(value.is_none());
     }
 
     #[test]
@@ -280,27 +284,28 @@ mod test {
 
         let result = index.get_newest_chart_version("invalid_chart");
 
-        assert_eq!(true, result.is_err());
+        assert!(result.is_err());
     }
 
     #[test]
     fn helm_repo_index_get_newest_chart_version_valid_chart_name() {
-        let mut version = Vec::new();
-        version.push(HelmRepoChartVersion {
-            api_version: Some("api_version".to_owned()),
-            name: "name".to_owned(),
-            version: "v0.1.0".to_owned(),
-            created: DateTime::from_str("2022-11-10T11:40:08.566983693Z").expect("wrong param"),
-        });
-        version.push(HelmRepoChartVersion {
-            api_version: Some("api_version".to_owned()),
-            name: "name".to_owned(),
-            version: "v0.2.0".to_owned(),
-            created: DateTime::from_str("2022-11-11T11:40:08.566983693Z").expect("wrong param"),
-        });
+        let versions = vec![
+            HelmRepoChartVersion {
+                api_version: Some("api_version".to_owned()),
+                name: "name".to_owned(),
+                version: "v0.1.0".to_owned(),
+                created: DateTime::from_str("2022-11-10T11:40:08.566983693Z").expect("wrong param"),
+            },
+            HelmRepoChartVersion {
+                api_version: Some("api_version".to_owned()),
+                name: "name".to_owned(),
+                version: "v0.2.0".to_owned(),
+                created: DateTime::from_str("2022-11-11T11:40:08.566983693Z").expect("wrong param"),
+            },
+        ];
 
         let mut entries = HashMap::new();
-        entries.insert("chart".to_owned(), version);
+        entries.insert("chart".to_owned(), versions);
 
         let index = HelmRepoIndex {
             api_version: "v1".to_owned(),
@@ -309,28 +314,29 @@ mod test {
 
         let result = index.get_newest_chart_version("chart");
 
-        assert_eq!(false, result.is_err());
+        assert!(result.is_ok());
         assert_eq!("v0.2.0", result.unwrap());
     }
 
     #[test]
     fn helm_repo_index_get_newest_chart_version_valid_chart_name_with_sort() {
-        let mut version = Vec::new();
-        version.push(HelmRepoChartVersion {
-            api_version: Some("api_version".to_owned()),
-            name: "name".to_owned(),
-            version: "v0.2.0".to_owned(),
-            created: DateTime::from_str("2022-11-11T11:40:08.566983693Z").expect("wrong param"),
-        });
-        version.push(HelmRepoChartVersion {
-            api_version: Some("api_version".to_owned()),
-            name: "name".to_owned(),
-            version: "v0.1.0".to_owned(),
-            created: DateTime::from_str("2022-11-10T11:40:08.566983693Z").expect("wrong param"),
-        });
+        let verions = vec![
+            HelmRepoChartVersion {
+                api_version: Some("api_version".to_owned()),
+                name: "name".to_owned(),
+                version: "v0.2.0".to_owned(),
+                created: DateTime::from_str("2022-11-11T11:40:08.566983693Z").expect("wrong param"),
+            },
+            HelmRepoChartVersion {
+                api_version: Some("api_version".to_owned()),
+                name: "name".to_owned(),
+                version: "v0.1.0".to_owned(),
+                created: DateTime::from_str("2022-11-10T11:40:08.566983693Z").expect("wrong param"),
+            },
+        ];
 
         let mut entries = HashMap::new();
-        entries.insert("chart".to_owned(), version);
+        entries.insert("chart".to_owned(), verions);
 
         let index = HelmRepoIndex {
             api_version: "v1".to_owned(),
@@ -339,7 +345,85 @@ mod test {
 
         let result = index.get_newest_chart_version("chart");
 
-        assert_eq!(false, result.is_err());
+        assert!(result.is_ok());
         assert_eq!("v0.2.0", result.unwrap());
+    }
+
+    #[tokio::test]
+    async fn helm_repo_client_get_helm_repo_index_error_on_404() {
+        let mut server = mockito::Server::new();
+
+        let mock = server.mock("GET", "/index.yaml").with_status(404).create();
+
+        let helm_repo_client = HelmRepoReqwestClient {};
+
+        let result = helm_repo_client.get_helm_repo_index(&server.url()).await;
+
+        mock.assert();
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn helm_repo_client_get_helm_repo_index_error_on_invalid_body() {
+        let mut server = mockito::Server::new();
+
+        let mock = server
+            .mock("GET", "/index.yaml")
+            .with_status(200)
+            .with_header("content-type", "text/plain")
+            .with_body("I'm an invalid body.")
+            .create();
+
+        let helm_repo_client = HelmRepoReqwestClient {};
+
+        let result = helm_repo_client.get_helm_repo_index(&server.url()).await;
+
+        mock.assert();
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn helm_repo_client_get_helm_repo_index_success() {
+        let mut server = mockito::Server::new();
+
+        let mock = server
+            .mock("GET", "/index.yaml")
+            .with_status(200)
+            .with_header("content-type", "application/yaml")
+            .with_body(
+                "apiVersion: v1
+entries:
+  cert-manager:
+  - apiVersion: v1
+    created: \"2023-06-20T18:03:27.348311421Z\"
+    name: name
+    version: v0.2.0",
+            )
+            .create();
+
+        let helm_repo_client = HelmRepoReqwestClient {};
+
+        let result = helm_repo_client.get_helm_repo_index(&server.url()).await;
+
+        mock.assert();
+        assert!(result.is_ok());
+
+        let value = result.unwrap();
+
+        let versions = vec![HelmRepoChartVersion {
+            api_version: Some("v1".to_owned()),
+            name: "name".to_owned(),
+            version: "v0.2.0".to_owned(),
+            created: DateTime::from_str("2023-06-20T18:03:27.348311421Z").expect("wrong param"),
+        }];
+
+        let mut entries = HashMap::new();
+        entries.insert("cert-manager".to_owned(), versions);
+
+        let expected_value = HelmRepoIndex {
+            api_version: "v1".to_owned(),
+            entries,
+        };
+        assert_eq!(expected_value, value);
     }
 }
