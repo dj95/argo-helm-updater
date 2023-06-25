@@ -77,8 +77,13 @@ pub struct HelmRepoIndex {
 
 impl HelmRepoIndex {
     pub fn get_newest_chart_version(&self, chart_name: &str) -> anyhow::Result<String> {
-        let mut versions = self.entries.get(chart_name).unwrap().clone();
+        let versions = self.entries.get(chart_name);
 
+        if versions.is_none() {
+            bail!("cannot find chart");
+        }
+
+        let mut versions = versions.unwrap().clone();
         versions.sort_by(|a, b| a.created.cmp(&b.created).reverse());
 
         return match versions.first() {
@@ -260,5 +265,81 @@ mod test {
 
         let value = result.unwrap();
         assert_eq!(true, value.is_none());
+    }
+
+    #[test]
+    fn helm_repo_index_get_newest_chart_version_invalid_chart_name() {
+        let version = Vec::new();
+        let mut entries = HashMap::new();
+        entries.insert("chart".to_owned(), version);
+
+        let index = HelmRepoIndex {
+            api_version: "v1".to_owned(),
+            entries,
+        };
+
+        let result = index.get_newest_chart_version("invalid_chart");
+
+        assert_eq!(true, result.is_err());
+    }
+
+    #[test]
+    fn helm_repo_index_get_newest_chart_version_valid_chart_name() {
+        let mut version = Vec::new();
+        version.push(HelmRepoChartVersion {
+            api_version: Some("api_version".to_owned()),
+            name: "name".to_owned(),
+            version: "v0.1.0".to_owned(),
+            created: DateTime::from_str("2022-11-10T11:40:08.566983693Z").expect("wrong param"),
+        });
+        version.push(HelmRepoChartVersion {
+            api_version: Some("api_version".to_owned()),
+            name: "name".to_owned(),
+            version: "v0.2.0".to_owned(),
+            created: DateTime::from_str("2022-11-11T11:40:08.566983693Z").expect("wrong param"),
+        });
+
+        let mut entries = HashMap::new();
+        entries.insert("chart".to_owned(), version);
+
+        let index = HelmRepoIndex {
+            api_version: "v1".to_owned(),
+            entries,
+        };
+
+        let result = index.get_newest_chart_version("chart");
+
+        assert_eq!(false, result.is_err());
+        assert_eq!("v0.2.0", result.unwrap());
+    }
+
+    #[test]
+    fn helm_repo_index_get_newest_chart_version_valid_chart_name_with_sort() {
+        let mut version = Vec::new();
+        version.push(HelmRepoChartVersion {
+            api_version: Some("api_version".to_owned()),
+            name: "name".to_owned(),
+            version: "v0.2.0".to_owned(),
+            created: DateTime::from_str("2022-11-11T11:40:08.566983693Z").expect("wrong param"),
+        });
+        version.push(HelmRepoChartVersion {
+            api_version: Some("api_version".to_owned()),
+            name: "name".to_owned(),
+            version: "v0.1.0".to_owned(),
+            created: DateTime::from_str("2022-11-10T11:40:08.566983693Z").expect("wrong param"),
+        });
+
+        let mut entries = HashMap::new();
+        entries.insert("chart".to_owned(), version);
+
+        let index = HelmRepoIndex {
+            api_version: "v1".to_owned(),
+            entries,
+        };
+
+        let result = index.get_newest_chart_version("chart");
+
+        assert_eq!(false, result.is_err());
+        assert_eq!("v0.2.0", result.unwrap());
     }
 }
