@@ -83,11 +83,24 @@ impl HelmRepoIndex {
             bail!("cannot find chart");
         }
 
-        let mut versions = versions.unwrap().clone();
-        versions.sort_by(|a, b| a.created.cmp(&b.created).reverse());
+        let mut semvers: Vec<_> = versions
+            .unwrap()
+            .iter()
+            .filter_map(|v| {
+                let mut ver = v.version.clone();
+                if v.version.starts_with('v') {
+                    ver = ver[1..].to_string();
+                }
+                versions::SemVer::new(&ver).map(|sv| (sv, v.version.clone()))
+            })
+            .filter(|(v, _)| v.pre_rel.is_none())
+            .collect();
 
-        return match versions.first() {
-            Some(version) => Ok(version.version.to_string()),
+        semvers.sort();
+        semvers.reverse();
+
+        return match semvers.first() {
+            Some(version) => Ok(version.1.to_string()),
             None => bail!("cannot get newest version"),
         };
     }
