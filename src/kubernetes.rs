@@ -52,25 +52,17 @@ pub struct ApplicationSpec {
 
 impl Application {
     pub fn helm_in_source(&self) -> bool {
-        if let Some(source) = &self.spec.source {
-            return source.is_helm();
+        match &self.spec.source {
+            Some(source) => source.is_helm(),
+            None => false,
         }
-
-        false
     }
 
     pub fn helm_in_sources(&self) -> bool {
-        if let Some(sources) = &self.spec.sources {
-            for source in sources {
-                if !source.is_helm() {
-                    continue;
-                }
-
-                return true;
-            }
+        match &self.spec.sources {
+            Some(sources) => sources.iter().filter(|s| s.is_helm()).count() > 0,
+            None => false,
         }
-
-        false
     }
 
     pub fn contains_helm(&self) -> bool {
