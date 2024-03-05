@@ -364,7 +364,7 @@ mod test {
 
     #[tokio::test]
     async fn helm_repo_client_get_helm_repo_index_error_on_404() {
-        let mut server = mockito::Server::new();
+        let mut server = mockito::Server::new_async().await;
 
         let mock = server.mock("GET", "/index.yaml").with_status(404).create();
 
@@ -378,7 +378,7 @@ mod test {
 
     #[tokio::test]
     async fn helm_repo_client_get_helm_repo_index_error_on_invalid_body() {
-        let mut server = mockito::Server::new();
+        let mut server = mockito::Server::new_async().await;
 
         let mock = server
             .mock("GET", "/index.yaml")
@@ -397,7 +397,7 @@ mod test {
 
     #[tokio::test]
     async fn helm_repo_client_get_helm_repo_index_success() {
-        let mut server = mockito::Server::new();
+        let mut server = mockito::Server::new_async().await;
 
         let mock = server
             .mock("GET", "/index.yaml")
