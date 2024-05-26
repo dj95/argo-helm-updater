@@ -36,6 +36,7 @@
           buildInputs = [
             # Add additional build inputs here
             pkgs.libiconv
+            pkgs.openssl
           ] ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [
             # Additional darwin specific inputs can be set here
             pkgs.darwin.apple_sdk.frameworks.Cocoa
