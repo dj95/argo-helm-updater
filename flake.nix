@@ -33,6 +33,8 @@
         argo-helm-updater = craneLib.buildPackage {
           src = craneLib.cleanCargoSource (craneLib.path ./.);
 
+          doNotSign = true;
+
           buildInputs = [
             # Add additional build inputs here
             pkgs.libiconv
