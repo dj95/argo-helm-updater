@@ -1,4 +1,5 @@
 use anyhow::Ok;
+use hyper_util::rt::TokioExecutor;
 use kube::{
     api::{ListParams, Patch, PatchParams},
     client::ConfigExt,
@@ -32,7 +33,7 @@ pub async fn init_client(
     let service = tower::ServiceBuilder::new()
         .layer(config.base_uri_layer())
         .option_layer(config.auth_layer()?)
-        .service(hyper::Client::builder().build(https));
+        .service(hyper_util::client::legacy::Client::builder(TokioExecutor::new()).build(https));
 
     Ok(Client::new(service, config.default_namespace))
 }
