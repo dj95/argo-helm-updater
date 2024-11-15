@@ -1,4 +1,3 @@
-use tower::BoxError;
 use anyhow::Ok;
 use hyper_util::rt::TokioExecutor;
 use kube::{
@@ -12,6 +11,7 @@ use log::debug;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
+use tower::BoxError;
 
 use crate::helm::HelmChart;
 
