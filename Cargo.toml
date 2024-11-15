@@ -6,26 +6,26 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anyhow = "1.0.86"
-async-trait = "0.1.81"
+anyhow = "1.0.93"
+async-trait = "0.1.83"
 chrono = { version = "0.4.38", default-features = false, features = ["serde"]}
-clap = { version = "4.5.9", features = ["derive"] }
-env_logger = "0.11.3"
-hyper = "1.4.1"
-hyper-util = { version = "0.1.6", features = ["client-legacy"] }
+clap = { version = "4.5.21", features = ["derive"] }
+env_logger = "0.11.5"
+hyper = "1.5.0"
+hyper-util = { version = "0.1.10", features = ["client-legacy"] }
 inquire = "0.7.5"
-k8s-openapi = { version = "0.22.0", features = ["v1_28"] }
-kube = { version = "0.91.0", default-features = false, features = ["derive", "client", "openssl-tls"] }
-kube-derive = "0.91.0"
+k8s-openapi = { version = "0.23.0", features = ["v1_31"] }
+kube = { version = "0.96.0", default-features = false, features = ["derive", "client", "openssl-tls"] }
+kube-derive = "0.96.0"
 log = "0.4.22"
-mockall = "0.12.1"
-mockito = "1.4.0"
-reqwest = "0.12.5"
+mockall = "0.13.0"
+mockito = "1.6.1"
+reqwest = "0.12.9"
 schemars = { version = "0.8.21", features = ["derive_json_schema"] }
-serde = { version = "1.0.204", features = ["derive"] }
-serde_json = "1.0.120"
+serde = { version = "1.0.215", features = ["derive"] }
+serde_json = "1.0.132"
 serde_yaml = "0.9.34"
-tokio = { version = "1.38.1", features = ["full"] }
-tower = "0.4.13"
-tower-http = "0.5.2"
-versions = "6.3.0"
+tokio = { version = "1.41.1", features = ["full"] }
+tower = "0.5.1"
+tower-http = "0.6.1"
+versions = "6.3.2"

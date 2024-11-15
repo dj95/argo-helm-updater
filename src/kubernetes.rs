@@ -1,3 +1,4 @@
+use tower::BoxError;
 use anyhow::Ok;
 use hyper_util::rt::TokioExecutor;
 use kube::{
@@ -33,6 +34,7 @@ pub async fn init_client(
     let service = tower::ServiceBuilder::new()
         .layer(config.base_uri_layer())
         .option_layer(config.auth_layer()?)
+        .map_err(BoxError::from)
         .service(hyper_util::client::legacy::Client::builder(TokioExecutor::new()).build(https));
 
     Ok(Client::new(service, config.default_namespace))
