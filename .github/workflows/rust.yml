@@ -18,7 +18,7 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@d388a4836fcdbde0e50e395dc79a2670ccdef13f  # stable
         with:
-          toolchain: '1.82.0'
+          toolchain: '1.86.0'
           target: x86_64-unknown-linux-gnu
       - name: Build
         run: cargo build --verbose
