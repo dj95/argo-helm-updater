@@ -99,10 +99,10 @@ impl HelmRepoIndex {
         semvers.sort();
         semvers.reverse();
 
-        return match semvers.first() {
+        match semvers.first() {
             Some(version) => Ok(version.1.to_string()),
             None => bail!("cannot get newest version"),
-        };
+        }
     }
 }
 
